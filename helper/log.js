@@ -37,16 +37,22 @@ class Log {
         }
     }
 
+    /**
+     *
+     * @param {String} err
+     * @param {String} [module]
+     */
     error(err, module) {
-        if (typeof err === "string") {
-            this.log.error(err, {module: module});
-            this.eventEmitter.emit("log", {log: err, error: true});
-        } else {
-            this.log.error(err.message, {data: err.stack.toString(), module: module});
-            this.eventEmitter.emit("log", {log: err.message, error: true});
-        }
+        this.log.error(err, {module: module});
+        this.eventEmitter.emit("log", {log: err, error: true});
     };
 
+    /**
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     warn(message, module, data) {
         if (this.config.enabled.warn) {
             let args = checkArgs(module, data);
@@ -58,6 +64,12 @@ class Log {
         }
     };
 
+    /**
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     info(message, module, data) {
         if (this.config.enabled.info) {
             let args = checkArgs(module, data);
@@ -69,6 +81,12 @@ class Log {
         }
     };
 
+    /**
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     verbose(message, module, data) {
         if (this.config.enabled.verbose) {
             let args = checkArgs(module, data);
@@ -80,6 +98,12 @@ class Log {
         }
     };
 
+    /**
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     debug(message, module, data) {
         if (this.config.enabled.debug) {
             let args = checkArgs(module, data);
@@ -91,6 +115,12 @@ class Log {
         }
     };
 
+    /**
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     silly(message, module, data) {
         if (this.config.enabled.silly) {
             let args = checkArgs(module, data);
@@ -102,6 +132,13 @@ class Log {
         }
     };
 
+    /**
+     * Standard info log that also passes a complete status to parent process via an event. (Used for cross-thread communication).
+     *
+     * @param {String} message
+     * @param {String} module
+     * @param {Object} data
+     */
     complete(message, module, data) {
         let args = checkArgs(module, data);
         module = args.module;
@@ -159,14 +196,13 @@ function getDefaultConfig() {
     };
 }
 
-function filterOnly(filters) {
-    return winston.format(function (info) {
-        if (filters.includes(info.level)) {
-            return info;
-        }
-    })();
-}
-
+/**
+ * Checks the types of the optional parameters and places them in the correct variable.
+ *
+ * @param {String} module
+ * @param {Object} data
+ * @returns {{data: *, module: *}}
+ */
 function checkArgs(module, data) {
     if (data && Object.keys(data).length > 0) {
         data = JSON.stringify(data);
@@ -182,6 +218,14 @@ function checkArgs(module, data) {
     }
 
     return {data: data, module: module};
+}
+
+function filterOnly(filters) {
+    return winston.format(function (info) {
+        if (filters.includes(info.level)) {
+            return info;
+        }
+    })();
 }
 
 const fileFormat = winston.format.printf(function(log) {
