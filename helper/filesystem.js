@@ -15,7 +15,9 @@ class FileSystem {
      * Ignores archive directories.
      * @param {String} dir - The path of the directory to read.
      * @param {readCallback} callback.
-     * @param {(String|Array)} [fileExt] - File extensions of files to return.
+     * @param {Object} [options] - Optional parameters.
+     * @param {Boolean} [options.createDir] - Create directory if it does not already exist.
+     * @param {(String|Array)} [options.fileExt] - File extensions of files to return.
      */
 
     static read(dir, callback, options = {}) {
@@ -57,6 +59,7 @@ class FileSystem {
      * Reads a particular file and returns the data.
      * @param {String} path - The path of the file to read.
      * @param {readFileCallback} callback.
+     * @param {Boolean} [createDir] - Create directory if it does not already exist.
      */
 
     static readFile(path, callback, createDir) {
@@ -99,6 +102,7 @@ class FileSystem {
      * @param {String} path - The path of the file to write.
      * @param {Object} data - The data to write to the file.
      * @param {writeFileCallback} callback.
+     * @param {Boolean} [createDir] - Create directory if it does not already exist.
      */
 
     static writeFile(path, data, callback, createDir) {
@@ -136,6 +140,7 @@ class FileSystem {
      * @param {String} src - The path of the source file.
      * @param {String} dest - The path to move the file to.
      * @param {moveCallback} callback.
+     * @param {Boolean} [createDir] - Create directory if it does not already exist.
      */
 
     static move(src, dest, callback, createDir) {
@@ -172,6 +177,7 @@ class FileSystem {
      * @param {String} src - The path of the source file.
      * @param {String} dest - The path to copy the file to.
      * @param {copyCallback} callback.
+     * @param {Boolean} [createDir] - Create directory if it does not already exist.
      */
 
     static copy(src, dest, callback, createDir) {
@@ -371,7 +377,7 @@ class FileSystem {
      * Reads a directory and returns the most recently created file.
      * @param {String} dir - The path of the directory to read.
      * @param {getLatestCallback} callback.
-     * @param {(String|Array)} [fileExt] - File extensions of files to consider.
+     * @param {Array} [fileExt] - File extensions of files to consider.
      */
 
     static getLatest(dir, callback, fileExt) {
