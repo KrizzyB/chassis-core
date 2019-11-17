@@ -51,7 +51,12 @@ function runCron(args) {
 }
 
 function printVersion() {
-    console.log("Chassis - Version: " + Chassis.getVersion());
+    console.log("OPTIONS");
+    console.log();
+    console.log("--test=[script file name] \t Run test script in the test directory.");
+    console.log("--cron=[job name] \t Run single cron job.");
+    console.log("-h \t This help information.");
+    console.log("-v \t Print Chassis version.");
 }
 
 function printHelp() {
