@@ -1,3 +1,10 @@
+/**
+ * Chassis test launcher.
+ * Allows the execution of a test script from the command line.
+ *
+ * @param {Object} args - Application arguments.
+ */
+
 module.exports = function(args) {
     try {
         let test = require("./tests/" + args.test);
