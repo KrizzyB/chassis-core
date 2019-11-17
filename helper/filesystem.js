@@ -403,7 +403,7 @@ class FileSystem {
                     }
                 });
             }
-        }, fileExt)
+        }, {fileExt: fileExt})
     };
 
     /**
@@ -442,7 +442,7 @@ class FileSystem {
                     }
                 });
             }
-        },fileExt)
+        }, {fileExt: fileExt})
     };
 
     /**
