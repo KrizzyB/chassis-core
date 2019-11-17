@@ -5,6 +5,7 @@ class Chassis {
         global.args = require('minimist')(process.argv.slice(2));
         global.appRoot = require("app-root-path").path + "/";
         global.requireOptional = require("./helper/require-optional");
+        global.Progress = require("./helper/progress");
 
         require("./model/config").getConfig(function(err, config) {
             if (err) {

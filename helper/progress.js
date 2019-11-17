@@ -5,11 +5,11 @@ class Progress {
         this.nextResponse = now + timeout;
     }
 
-    getProgress(position, length, message) {
+    getPercentage(position, length, message) {
         let _return = {};
 
         let now = new Date().getTime();
-        if (now >= this.nextResponse) {
+        if (now >= this.nextResponse || position === 0) {
             this.nextResponse = now + this.timeout;
 
             let percent = Math.round((position/length) * 100);
