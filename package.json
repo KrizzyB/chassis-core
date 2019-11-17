@@ -1,0 +1,17 @@
+{
+  "name": "chassis-core",
+  "version": "0.1.0",
+  "description": "Modular app bootstrapper for NodeJS that includes various wrapper modules for common Node features.",
+  "main": "chassis.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kris Sinclair",
+  "license": "ISC",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "fs-extra": "^8.1.0",
+    "minimist": "^1.2.0",
+    "winston": "^3.2.1"
+  }
+}
