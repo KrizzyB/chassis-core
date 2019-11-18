@@ -53,7 +53,6 @@ function formatUpdate(message, processId) {
 }
 
 const Chassis = require("../chassis");
-new Chassis.bootstrap(function() {
-    let options = Thread.parseArgs(args);
-    new Fork(options.modulePath, options.method, options.processId, options);
+Chassis.bootstrap(function() {
+    new Fork(args.modulePath, args.method, args.processId, args);
 });

@@ -1,11 +1,12 @@
 const childProcess = require("child_process");
+const crypto = require("crypto");
 
 class Thread {
     constructor(modulePath, method, args = []) {
         this.modulePath = modulePath;
         this.method = method;
         this.args = args;
-        this.processId = Thread.generateRandomId(length);
+        this.processId = Thread.generateRandomId(32);
     }
 
     fork() {
@@ -14,7 +15,7 @@ class Thread {
             stdio: "inherit",
             execArgv: ["--no-deprecation", "--max-old-space-size=4096"]
         };
-        let thread = childProcess.fork("../helper/fork", args, childProcessOptions);
+        let thread = childProcess.fork(appRoot + "node_modules/chassis-core/helper/fork", args, childProcessOptions);
         thread.on("message", function(message) {
             Log.eventEmitter.emit("message", message);
         });
@@ -49,36 +50,12 @@ class Thread {
         return args;
     }
 
-    static parseArgs(args) {
-        let options = {};
-
-        for (let a=0; a<args.length; a++) {
-            let object = Thread.argToObject(args[a]);
-            options[object.key] = [object.value];
-        }
-
-        return options;
-    }
-
     static objectToArgs(object) {
         let arg = "--" + object.key;
         if (typeof object.value !== "boolean") {
             arg += "=" + object.value
         }
         return arg;
-    }
-
-    static argToObject(arg) {
-        let option = {};
-        arg = arg.splice(0, 2); //remove the "--"
-        if (arg.contains("=")) {
-            arg.split("=");
-            option[arg[0]] = arg[1];
-        } else {
-            option[arg[0]] = true;
-        }
-
-        return option;
     }
 }
 
