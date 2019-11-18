@@ -1,11 +1,16 @@
 const VERSION = "0.1.0";
 
 class Chassis {
+    /**
+     *
+     * @param {Function} callback - Code to run after initialisation
+     */
     static bootstrap(callback) {
         global.args = require('minimist')(process.argv.slice(2));
         global.appRoot = require("app-root-path").path + "/";
         global.requireOptional = require("./helper/require-optional");
         global.Progress = require("./helper/progress");
+        global.Thread = require("./model/thread");
 
         require("./model/config").getConfig(function(err, config) {
             if (err) {

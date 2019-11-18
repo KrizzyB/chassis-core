@@ -1,0 +1,85 @@
+const childProcess = require("child_process");
+
+class Thread {
+    constructor(modulePath, method, args = []) {
+        this.modulePath = modulePath;
+        this.method = method;
+        this.args = args;
+        this.processId = Thread.generateRandomId(length);
+    }
+
+    fork() {
+        let args = Thread.generateArgs(this);
+        let childProcessOptions = {
+            stdio: "inherit",
+            execArgv: ["--no-deprecation", "--max-old-space-size=4096"]
+        };
+        let thread = childProcess.fork("../helper/fork", args, childProcessOptions);
+        thread.on("message", function(message) {
+            Log.eventEmitter.emit("message", message);
+        });
+    }
+
+    /**
+     * Generates a random string of letters and numbers
+     * @param {Number} [length] - Length of string to be generated. (Default 32)
+     * @returns {String} string - Random string.
+     */
+    static generateRandomId(length) {
+        if (!length) {
+            length = 32;
+        }
+
+        return crypto.randomBytes(length).toString('hex');
+    }
+
+    static generateArgs(thread) {
+        let args = [];
+
+        //push expected arguments
+        args.push(Thread.objectToArgs({key: "modulePath", value: thread.modulePath}));
+        args.push(Thread.objectToArgs({key: "method", value: thread.method}));
+        args.push(Thread.objectToArgs({key: "processId", value: thread.processId}));
+
+        let keys = Object.keys(thread.args);
+        for (let k=0; k<keys.length; k++) {
+            args.push(Thread.objectToArgs({key: keys[k], value: thread.args[keys[k]]}));
+        }
+
+        return args;
+    }
+
+    static parseArgs(args) {
+        let options = {};
+
+        for (let a=0; a<args.length; a++) {
+            let object = Thread.argToObject(args[a]);
+            options[object.key] = [object.value];
+        }
+
+        return options;
+    }
+
+    static objectToArgs(object) {
+        let arg = "--" + object.key;
+        if (typeof object.value !== "boolean") {
+            arg += "=" + object.value
+        }
+        return arg;
+    }
+
+    static argToObject(arg) {
+        let option = {};
+        arg = arg.splice(0, 2); //remove the "--"
+        if (arg.contains("=")) {
+            arg.split("=");
+            option[arg[0]] = arg[1];
+        } else {
+            option[arg[0]] = true;
+        }
+
+        return option;
+    }
+}
+
+module.exports = Thread;
