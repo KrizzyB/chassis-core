@@ -10,6 +10,8 @@ class Chassis {
         global.appRoot = require("app-root-path").path + "/";
         global.config = {};
         global.requireOptional = require("./helper/require-optional");
+        global.FileSystem = require("./helper/filesystem");
+        global.Format = require("./helper/format");
         global.Progress = require("./helper/progress");
         global.Thread = require("./model/thread");
 
