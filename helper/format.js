@@ -5,7 +5,7 @@ class Format {
      * @returns {Boolean} Boolean version of input.
      */
 
-    static toBoolean = function (input) {
+    static toBoolean(input) {
         let trueValues = [
             "Enabled",
             1,
@@ -23,7 +23,7 @@ class Format {
      * @returns {Number} Number version of input.
      */
 
-    static fromBoolean = function (input) {
+    static fromBoolean(input) {
         if (input) {
             return 1;
         } else {
@@ -38,7 +38,7 @@ class Format {
      * @returns {Array} Array created from converted data.
      */
 
-    static toArray = function (input, delimiter) {    //split multi-value fields into array
+    static toArray(input, delimiter) {    //split multi-value fields into array
         let array;
         let keys;
 
@@ -104,7 +104,7 @@ class Format {
      * @returns {String} Number version of input.
      */
 
-    static fixCase = function (input, nonEnglish) {    //split multi-value fields into array
+    static fixCase(input, nonEnglish) {    //split multi-value fields into array
         let output = "";
         if (input) {
             let nonCapWords = ["a", "an", "at", "as", "by", "for", "of", "in", "is", "on", "up", "the", "to", "and", "but", "or", "nor", "with"];
@@ -158,7 +158,7 @@ class Format {
      * @returns {Object} - Object containing date attributes.
      */
 
-    static date = function (date) {
+    static date(date) {
         function leadingZeroCheck(input) {
             if (input < 10) {
                 input = "0" + input;
