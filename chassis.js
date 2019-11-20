@@ -8,15 +8,15 @@ class Chassis {
     static bootstrap(callback) {
         global.args = require('minimist')(process.argv.slice(2));
         global.appRoot = require("app-root-path").path + "/";
+        global.config = {};
         global.requireOptional = require("./helper/require-optional");
         global.Progress = require("./helper/progress");
         global.Thread = require("./model/thread");
 
         require("./model/config").getConfig(function(err, config) {
             if (err) {
-                console.warn("No configuration found in the database or the 'config.json' file, application will use default settings.");
-                global.config = {};
-            } else {
+                console.error(err);
+            } else if (config) {
                 global.config = config;
             }
 
