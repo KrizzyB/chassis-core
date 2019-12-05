@@ -1,4 +1,4 @@
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 
 class Chassis {
     /**
@@ -8,15 +8,17 @@ class Chassis {
     static bootstrap(callback) {
         global.args = require('minimist')(process.argv.slice(2));
         global.appRoot = require("app-root-path").path + "/";
+        global.config = {};
         global.requireOptional = require("./helper/require-optional");
+        global.FileSystem = require("./helper/filesystem");
+        global.Format = require("./helper/format");
         global.Progress = require("./helper/progress");
         global.Thread = require("./model/thread");
 
         require("./model/config").getConfig(function(err, config) {
             if (err) {
-                console.warn("No configuration found in the database or the 'config.json' file, application will use default settings.");
-                global.config = {};
-            } else {
+                console.error(err);
+            } else if (config) {
                 global.config = config;
             }
 
