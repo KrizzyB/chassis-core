@@ -50,8 +50,8 @@ class Log {
     /**
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     warn(message, module, data) {
         if (this.config.enabled.warn) {
@@ -67,8 +67,8 @@ class Log {
     /**
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     info(message, module, data) {
         if (this.config.enabled.info) {
@@ -84,8 +84,8 @@ class Log {
     /**
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     verbose(message, module, data) {
         if (this.config.enabled.verbose) {
@@ -101,8 +101,8 @@ class Log {
     /**
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     debug(message, module, data) {
         if (this.config.enabled.debug) {
@@ -118,8 +118,8 @@ class Log {
     /**
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     silly(message, module, data) {
         if (this.config.enabled.silly) {
@@ -136,8 +136,8 @@ class Log {
      * Standard info log that also passes a complete status to parent process via an event. (Used for cross-thread communication).
      *
      * @param {String} message
-     * @param {String} module
-     * @param {Object} data
+     * @param {String} [module]
+     * @param {Object} [data]
      */
     complete(message, module, data) {
         let args = checkArgs(module, data);
