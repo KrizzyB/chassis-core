@@ -15,7 +15,7 @@ module.exports = function(args) {
     }
 
     if (cron) {
-        cron.run({job: args.cron, args: args});
+        cron.run(args.cron, args, args.thread);
     } else {
         throw new Err("Chassis Cron module not installed, please install it by running \"npm install chassis-cron\".");
     }
