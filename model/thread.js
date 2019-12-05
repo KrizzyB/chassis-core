@@ -9,11 +9,15 @@ class Thread {
         this.processId = Thread.generateRandomId(32);
     }
 
-    fork() {
+    /**
+     *
+     * @param {Array} execArgv
+     */
+    fork(execArgv = []) {
         let args = Thread.generateArgs(this);
         let childProcessOptions = {
             stdio: "inherit",
-            execArgv: ["--no-deprecation", "--max-old-space-size=4096"]
+            execArgv: execArgv
         };
         let thread = childProcess.fork(appRoot + "node_modules/chassis-core/helper/fork", args, childProcessOptions);
         thread.on("message", function(message) {
