@@ -26,6 +26,11 @@ class Thread {
         let thread = childProcess.fork(appRoot + "node_modules/chassis-core/helper/fork", threadArgs, childProcessOptions);
         thread.on("message", function(message) {
             Log.eventEmitter.emit("message", message);
+            if (message.complete) {
+                thread.kill('SIGINT');
+            } else if (message.error) {
+                thread.kill('SIGINT');
+            }
         });
     }
 
