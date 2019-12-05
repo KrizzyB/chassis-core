@@ -1,6 +1,6 @@
 {
   "name": "chassis-core",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Modular app bootstrapper for NodeJS that includes various wrapper modules for common Node features.",
   "main": "chassis.js",
   "scripts": {
