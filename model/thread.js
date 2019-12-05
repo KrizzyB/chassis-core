@@ -14,12 +14,16 @@ class Thread {
      * @param {Array} execArgv
      */
     fork(execArgv = []) {
-        let args = Thread.generateArgs(this);
+        if (args.debug) {
+            execArgv.push("--inspect-brk=" + getFreeDebugPort());
+        }
+        let threadArgs = Thread.generateArgs(this);
         let childProcessOptions = {
             stdio: "inherit",
             execArgv: execArgv
         };
-        let thread = childProcess.fork(appRoot + "node_modules/chassis-core/helper/fork", args, childProcessOptions);
+
+        let thread = childProcess.fork(appRoot + "node_modules/chassis-core/helper/fork", threadArgs, childProcessOptions);
         thread.on("message", function(message) {
             Log.eventEmitter.emit("message", message);
         });
@@ -61,6 +65,19 @@ class Thread {
         }
         return arg;
     }
+}
+
+function getFreeDebugPort(port) {
+    port = port ? port: activeDebugPorts[activeDebugPorts.length-1];
+    port++;
+
+    if (activeDebugPorts.includes(port)) {
+        port = getFreeDebugPort(port);
+    } else {
+        activeDebugPorts.push(port);
+    }
+
+    return port;
 }
 
 module.exports = Thread;

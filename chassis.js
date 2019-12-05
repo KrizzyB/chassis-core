@@ -36,10 +36,14 @@ class Chassis {
 }
 
 function startMainProcess(callback) {
+    if (args.debug) {
+        global.activeDebugPorts = [getDebugPort()];
+    }
+
     if (args.test) {
         runTest(args);   //run a test procedure
     } else if (args.cron) {
-        runCron(args.cron);
+        runCron(args.cron); //run a single cron job
     } else if (args.v || args.version) {
         printVersion(); //print application version
     } else if (args.h || args.help) {
@@ -47,6 +51,33 @@ function startMainProcess(callback) {
     } else {
         callback();
     }
+}
+
+function getDebugPort() {
+    let args = process.execArgv;
+    let debugPort;
+    for (let i=0; i<args.length; i++) {
+        switch (0) {
+            case args[i].indexOf("--inspect-brk="):
+                debugPort = args[i].slice(14);
+                break;
+            case args[i].indexOf("--inspect="):
+                debugPort = args[i].slice(10);
+                break;
+            case args[i].indexOf("--inspect-brk"):
+                debugPort = 9229;
+                break;
+            case args[i].indexOf("--inspect"):
+                debugPort = 9229;
+                break;
+        }
+
+        if (debugPort) {
+            break;
+        }
+    }
+
+    return Number(debugPort);
 }
 
 function runTest(args) {
