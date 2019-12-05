@@ -9,50 +9,57 @@ class Fork {
         delete args.method;
         delete args.processId;
 
+        this.modulePath = modulePath;
+        this.method = method;
+        this.processId = processId;
+        this.args = args;
+    }
+
+    run() {
+        let parent = this;
+
         Log.eventEmitter.on("log", function(message) {  //use events to send logs back to main process
-            process.send(formatUpdate(message, this.processId));
+            process.send(formatEvent(message, parent.processId));
         });
 
         //start thread
         let thread;
         try {
-            thread = require(modulePath);
+            thread = require(this.modulePath);
         } catch (e) {
-            Log.verbose("Unable to find module " + modulePath + " in current scope, attempting from app root.", "Fork", e);
+            Log.verbose("Unable to find module " + this.modulePath + " in current scope, attempting from app root.", "Fork", e);
         }
 
         if (!thread) {
             try {
-                thread = require(appRoot + modulePath);
+                thread = require(appRoot + this.modulePath);
             } catch (e) {
-                throw new Err("Cannot find module \"" + modulePath + "\" to run on thread.");
+                throw new Err("Cannot find module \"" + this.modulePath + "\" to run on thread.");
             }
         }
 
         if (thread) {
-            thread[method](args);
+            thread[this.method](args);
         }
     }
 }
 
-function formatUpdate(message, processId) {
-    status.push(message.log);
-
-    let process = {
+formatEvent = function(message, processId) {
+    let event = {
         id: processId,
-        status: status
+        message: message.log
     };
 
     if (message.complete) {
-        process.complete = true;
+        event.complete = true;
     } else if (message.error) {
-        process.error = true;
+        event.error = true;
     }
 
-    return process;
-}
+    return event;
+};
 
 const Chassis = require("../chassis");
 Chassis.bootstrap(function() {
-    new Fork(args.modulePath, args.method, args.processId, args);
+    new Fork(args.modulePath, args.method, args.processId, args).run();
 });
