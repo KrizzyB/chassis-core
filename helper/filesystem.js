@@ -249,7 +249,7 @@ class FileSystem {
         let dir = getDir(path);
         let file = getFile(path);
 
-        const Format = require(appRoot + "app/system/helper/format");
+        const Format = require("./format");
         let date = Format.date();
         let fileDate = date.year + date.month + date.date + date.hours + date.minutes + date.seconds;
         let fileName = file.substring(0, file.lastIndexOf("."));
