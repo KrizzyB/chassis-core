@@ -43,7 +43,7 @@ function startMainProcess(callback) {
     if (args.test) {
         runTest(args);   //run a test procedure
     } else if (args.cron) {
-        runCron(args.cron); //run a single cron job
+        runCron(args); //run a single cron job
     } else if (args.v || args.version) {
         printVersion(); //print application version
     } else if (args.h || args.help) {

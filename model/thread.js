@@ -74,6 +74,7 @@ class Thread {
 
 function getFreeDebugPort(port) {
     port = port ? port: activeDebugPorts[activeDebugPorts.length-1];
+    port = port ? port: 9229;   //catch if we cannot possibly find a port
     port++;
 
     if (activeDebugPorts.includes(port)) {
