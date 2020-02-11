@@ -12,8 +12,6 @@ const schema = {
 
 const model = mongoose ? mongoose.model('Config', mongoose.Schema(schema)): null;
 
-const dbNotConnectedErr = {message: "No database connected."};
-
 class Config {
     /**
      *
@@ -27,6 +25,7 @@ class Config {
     }
 
     /**
+     * Reads the config.json file. If no file is found, falls back to fetching from the database.
      *
      * @param {Function} callback
      * @param {String} [key] - Specific config data to return, if omitted all config data is returned.
@@ -37,7 +36,7 @@ class Config {
             if (err) {
                 readConfigFromDB(callback, key);
             } else {
-                readConfigFromFile(config, callback, key);
+                readConfigFromFile(String(config), callback, key);
             }
         });
     }
@@ -47,19 +46,23 @@ class Config {
      * @param {Function} callback
      */
     static get(callback) {
-        if (DB.getReadyState()) {
-            model ? model.find({id: key}, function (err, process) {
-                callback(err, process);
-            }).lean() : callback();
-        } else {
-            callback(dbNotConnectedErr);
-        }
-
-    }
-    static getOne(key, callback) {
-        model ? model.findOne({id: key}, function (err, process) {
-            callback(err, process);
+        model ? model.find({}, function (err, configs) {
+            callback(err, Config.toCollection(configs));
         }).lean() : callback();
+    }
+
+    static getOne(key, callback) {
+        model ? model.findOne({id: key}, function (err, config) {
+            callback(err, {id: key, data: config[key]});
+        }).lean() : callback();
+    }
+
+    static toCollection(configs) {
+        let collection = {};
+
+        for (let c=0; c<configs.length; c++) {
+            collection[configs[c].id] = configs[c].data;
+        }
     }
 
     /**
@@ -117,12 +120,12 @@ function readConfigFromFile(config, callback, key) {
     config = JSON.parse(config);
     if (key) {
         if (config[key]) {
-            callback(null, config[key]);
+            callback(null, new Config({id: key, data: config[key]}));
         } else {
             readConfigFromDB(callback, key);
         }
     } else {
-        callback(null, config);
+        callback(null, Config.toCollection(config));
     }
 }
 
