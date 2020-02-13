@@ -1,9 +1,11 @@
 const events = require("events");
 const winston = require("winston");
+const Config = require("../model/config/config");
 
 class Log {
     constructor(){
-        this.config = config.log ? config.log : getDefaultConfig();
+        let logConfig = config.getConfigByID("log");
+        this.config = logConfig.data ? logConfig.merge(getDefaultConfig()) : getDefaultConfig().data;
         this.eventEmitter = new events.EventEmitter();
         this.log = winston.createLogger({
             format: winston.format.combine(
@@ -149,51 +151,58 @@ class Log {
     };
 }
 
+/**
+ *
+ * @returns {Config}
+ */
 function getDefaultConfig() {
-    return {
-        transports: [{
-            path: "log/error.log",
-            level: "error",
-            filters: ["error"]
-        }, {
-            path: "log/warn.log",
-            level: "warn",
-            filters: ["warn"]
-        }, {
-            path: "log/info.log",
-            level: "info",
-            filters: ["info"]
-        }, {
-            path: "log/verbose.log",
-            level: "verbose",
-            filters: ["verbose"]
-        }, {
-            path: "log/debug.log",
-            level: "debug",
-            filters: ["debug"]
-        }, {
-            path: "log/silly.log",
-            level: "silly",
-            filters: ["silly"]
-        }],
-        console: {
-            level: ["info"]
-        },
-        exception : {
-            path: "log/exception.log",
-            exitOnError: false
-        },
-        timestamp: {
-            format: "YYYY-MM-DD HH:mm:ss"
-        },
-        enabled: {
-            warn: true,
-            info: true,
-            verbose: false,
-            debug: false,
-            silly: false
+    return new Config({
+        id: "log",
+        data: {
+            transports: [{
+                path: "log/error.log",
+                level: "error",
+                filters: ["error"]
+            }, {
+                path: "log/warn.log",
+                level: "warn",
+                filters: ["warn"]
+            }, {
+                path: "log/info.log",
+                level: "info",
+                filters: ["info"]
+            }, {
+                path: "log/verbose.log",
+                level: "verbose",
+                filters: ["verbose"]
+            }, {
+                path: "log/debug.log",
+                level: "debug",
+                filters: ["debug"]
+            }, {
+                path: "log/silly.log",
+                level: "silly",
+                filters: ["silly"]
+            }],
+            console: {
+                level: ["info"]
+            },
+            exception: {
+                path: "log/exception.log",
+                exitOnError: false
+            },
+            timestamp: {
+                format: "YYYY-MM-DD HH:mm:ss"
+            },
+            enabled: {
+                warn: true,
+                info: true,
+                verbose: false,
+                debug: false,
+                silly: false
+            }
         }
-    };
+    });
 }
 
 /**

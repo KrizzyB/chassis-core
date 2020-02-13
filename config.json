@@ -1,0 +1,87 @@
+{
+  "log": {
+    "transports": [
+      {
+        "path": "log/error.log",
+        "level": "error",
+        "filters": [
+          "error"
+        ]
+      },
+      {
+        "path": "log/warn.log",
+        "level": "warn",
+        "filters": [
+          "warn"
+        ]
+      },
+      {
+        "path": "log/info.log",
+        "level": "info",
+        "filters": [
+          "info"
+        ]
+      },
+      {
+        "path": "log/verbose.log",
+        "level": "verbose",
+        "filters": [
+          "verbose"
+        ]
+      },
+      {
+        "path": "log/debug.log",
+        "level": "debug",
+        "filters": [
+          "debug"
+        ]
+      },
+      {
+        "path": "log/silly.log",
+        "level": "silly",
+        "filters": [
+          "silly"
+        ]
+      }
+    ],
+    "console": {
+      "level": [
+        "info"
+      ]
+    },
+    "exception": {
+      "path": "log/exception.log",
+      "exitOnError": false
+    },
+    "timestamp": {
+      "format": "YYYY-MM-DD HH:mm:ss"
+    },
+    "enabled": {
+      "warn": true,
+      "info": true,
+      "verbose": false,
+      "debug": false,
+      "silly": false
+    }
+  },
+  "db": {
+    "user": "KrizzyB",
+    "pass": "{1337Geek}",
+    "authSource": "admin",
+    "host": "localhost",
+    "port": "27017",
+    "dbName": "palacerigg"
+  },
+  "test": {
+    "test": "This data is overridden",
+    "testObject": {
+      "item3": "This ia a new item"
+    },
+    "testObject2": {
+      "item4": "This was entirely added from the override file"
+    },
+    "testArray": [
+      "this should be the only item in this array"
+    ]
+  }
+}
