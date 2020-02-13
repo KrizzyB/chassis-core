@@ -1,11 +1,12 @@
 const events = require("events");
 const winston = require("winston");
+require('winston-daily-rotate-file');
 const Config = require("../model/config/config");
 
 class Log {
     constructor(){
         let logConfig = config.getConfigByID("log");
-        this.config = logConfig.data ? logConfig.merge(getDefaultConfig()) : getDefaultConfig().data;
+        this.config = logConfig ? logConfig.merge(getDefaultConfig()).data : getDefaultConfig().data;
         this.eventEmitter = new events.EventEmitter();
         this.log = winston.createLogger({
             format: winston.format.combine(
@@ -23,11 +24,19 @@ class Log {
             exitOnError: false
         });
 
-        for (let i=0; i<this.config.transports.length; i++) {
-            this.log.add(new winston.transports.File({
-                filename: appRoot + this.config.transports[i].path,
-                level: this.config.transports[i].level,
-                format: filterOnly(this.config.transports[i].filters)
+        let transports = Object.keys(this.config.transports);
+        for (let i=0; i<transports.length; i++) {
+            this.log.add(new winston.transports.DailyRotateFile({
+                filename: appRoot + this.config.transports[transports[i]].dir + this.config.transports[transports[i]].filename,
+                extension: this.config.transports[transports[i]].extension,
+                level: this.config.transports[transports[i]].level,
+                format: filterOnly(this.config.transports[transports[i]].filters),
+                frequency: this.config.transports[transports[i]].rotation.frequency,
+                datePattern: this.config.transports[transports[i]].rotation.datePattern,
+                zippedArchive: this.config.transports[transports[i]].rotation.zippedArchive,
+                maxSize: this.config.transports[transports[i]].rotation.maxSize,
+                maxFiles: this.config.transports[transports[i]].rotation.maxFiles,
+                utc: this.config.transports[transports[i]].rotation.utc
             }));
         }
 
@@ -41,12 +50,12 @@ class Log {
 
     /**
      *
-     * @param {String} err
+     * @param {String} message
      * @param {String} [module]
      */
-    error(err, module) {
-        this.log.error(err, {module: module});
-        this.eventEmitter.emit("log", {log: err, error: true});
+    error(message, module) {
+        this.log.error(message, {module: module});
+        this.eventEmitter.emit("log", {log: message, error: true});
     };
 
     /**
@@ -159,36 +168,104 @@ function getDefaultConfig() {
     return new Config({
         id: "log",
         data: {
-            transports: [{
-                path: "log/error.log",
-                level: "error",
-                filters: ["error"]
-            }, {
-                path: "log/warn.log",
-                level: "warn",
-                filters: ["warn"]
-            }, {
-                path: "log/info.log",
-                level: "info",
-                filters: ["info"]
-            }, {
-                path: "log/verbose.log",
-                level: "verbose",
-                filters: ["verbose"]
-            }, {
-                path: "log/debug.log",
-                level: "debug",
-                filters: ["debug"]
-            }, {
-                path: "log/silly.log",
-                level: "silly",
-                filters: ["silly"]
-            }],
+            transports: {
+                error:{
+                    dir: "log/",
+                    filename: "error-%DATE%",
+                    extension: ".log",
+                    level: "error",
+                    filters: ["error"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                },
+                warn :{
+                    dir: "log/",
+                    filename: "warn-%DATE%",
+                    extension: ".log",
+                    level: "warn",
+                    filters: ["warn"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                },
+                info: {
+                    dir: "log/",
+                    filename: "info-%DATE%",
+                    extension: ".log",
+                    level: "info",
+                    filters: ["info"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                },
+                verbose: {
+                    dir: "log/",
+                    filename: "verbose-%DATE%",
+                    extension: ".log",
+                    level: "verbose",
+                    filters: ["verbose"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                },
+                debug: {
+                    dir: "log/",
+                    filename: "debug-%DATE%",
+                    extension: ".log",
+                    level: "debug",
+                    filters: ["debug"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                },
+                silly: {
+                    dir: "log/",
+                    filename: "silly-%DATE%",
+                    extension: ".log",
+                    level: "silly",
+                    filters: ["silly"],
+                    rotation: {
+                        frequency: "24h",
+                        datePattern: "YYYY-MM-DD",
+                        zippedArchive: true,
+                        maxSize: null,
+                        maxFiles: "365d",
+                        utc: "true",
+                    }
+                }
+            },
             console: {
                 level: ["info"]
             },
             exception: {
-                path: "log/exception.log",
+                dir: "log/",
+                filename: "exception",
                 exitOnError: false
             },
             timestamp: {
