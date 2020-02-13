@@ -15,7 +15,7 @@ class Chassis {
         global.Progress = require("./helper/progress");
         global.Thread = require("./model/thread");
 
-        require("./model/config").getConfig(function(err, config) {
+        Chassis.getConfig(function(err, config) {
             if (err) {
                 console.error(err);
             } else if (config) {
@@ -32,6 +32,14 @@ class Chassis {
 
     static getVersion() {
         return VERSION;
+    }
+
+    static getConfig(callback) {
+        let ConfigCollection = require("./model/config/configCollection");
+        let configs = new ConfigCollection;
+        configs.getConfigs(function(err, configs) {
+            callback(err, configs);
+        });
     }
 }
 

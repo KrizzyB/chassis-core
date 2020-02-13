@@ -14,5 +14,8 @@
     "fs-extra": "^8.1.0",
     "minimist": "^1.2.0",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "chassis-database": "0.0.1"
   }
 }
