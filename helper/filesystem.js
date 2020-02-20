@@ -21,13 +21,14 @@ class FileSystem {
      */
 
     static read(dir, callback, options = {}) {
+        let args = arguments;
         dir = cleanupDir(dir);
 
         //first check the listening dir
         fs.readdir(dir, function(err, files) {
             if (err) {
                 if (options.createDir) {
-                    handleError(err, FileSystem.read, [dir, options.fileExt, callback], 0, callback);
+                    handleError(err, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -63,12 +64,13 @@ class FileSystem {
      */
 
     static readFile(path, callback, createDir) {
+        let args = arguments;
         let dir = getDir(path);
         let file = getFile(path);
         fs.readFile(dir + file, function (err, data) {
             if (err) {
                 if (createDir) {
-                    handleError(err, FileSystem.readFile, [dir, file, callback], 0, callback);
+                    handleError(err, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -106,12 +108,13 @@ class FileSystem {
      */
 
     static writeFile(path, data, callback, createDir) {
+        let args = arguments;
         let dir = getDir(path);
         let file = getFile(path);
         fs.writeFile(dir + file, data, function (err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, FileSystem.writeFile, [dir, file, data, callback], 0, callback);
+                    handleError(err, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -119,6 +122,48 @@ class FileSystem {
                 callback(null, file);
             }
         });
+    };
+
+    /**
+     * @callback createCallback
+     * @param {Object} err - Error output.
+     * @param {String} [dir] - Directory created.
+     */
+    /**
+     * Creates directories that do not exist.
+     * @param {String} path - The path of the directory to read.
+     * @param {createCallback} callback.
+     * @param {Number} [i]
+     */
+
+    static createDir = function(path, callback, i=0) {
+        let dirs = path.split(/[\/\\]/gi).filter(Boolean);  //get each level of the path
+        if (i<dirs.length) {
+            let root = "";
+            for (let d=0; d<dirs.length-(i+1); d++) {   //build the main root to this directory
+                root += dirs[d] + "/";
+            }
+
+            fs.mkdir(root + dirs[dirs.length-(i+1)], function (err) {   //create missing directory
+                if (err) {
+                    switch (err.code) {
+                        case "ENOENT":
+                            FileSystem.createDir(path, callback, i+1); //attempt to create the next level down
+                            break;
+                        case "EEXIST":
+                            callback(null);     //Directory created by another process, move on
+                            break;
+                        default:
+                            callback(err);
+                            break;
+                    }
+                } else {
+                    callback(null);
+                }
+            });
+        } else {
+            callback(null, null);
+        }
     };
 
     /**
@@ -144,10 +189,11 @@ class FileSystem {
      */
 
     static move(src, dest, callback, createDir) {
+        let args = arguments;
         fs.rename(src, dest, function(err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, FileSystem.move, [src, dest, callback], 1, callback);
+                    handleError(err, args, dest, callback);
                 } else {
                     callback(err);
                 }
@@ -181,10 +227,11 @@ class FileSystem {
      */
 
     static copy(src, dest, callback, createDir) {
+        let args = arguments;
         fs.copyFile(src, dest, function(err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, FileSystem.copy, [src, dest, callback], 1, callback);
+                    handleError(err, args, dest, callback);
                 } else {
                     callback(err);
                 }
@@ -205,6 +252,22 @@ class FileSystem {
         return fs.copyFileSync(src, dest);
     };
 
+    static deleteDir = function(path, callback) {
+        fs.rmdir(path, function (err) {
+            callback(err);
+        });
+    };
+
+    /**
+     * Delete a directory synchronously
+     * @param {String} path - The path of the directory to delete.
+     * @returns {Object}
+     */
+
+    static deleteDirSync = function(path) {
+        return fs.rmdirSync(path);
+    };
+
     /**
      * @callback deleteCallback
      * @param {Object} err - Error output.
@@ -215,7 +278,7 @@ class FileSystem {
      * @param {deleteCallback} callback.
      */
 
-    static delete(path, callback) {
+    static deleteFile = function(path, callback) {
         fs.unlink(path, function (err) {
             callback(err);
         });
@@ -227,8 +290,65 @@ class FileSystem {
      * @returns {Object}
      */
 
-    static deleteSync(path) {
+    static deleteFileSync = function(path) {
         return fs.unlinkSync(path);
+    };
+
+    /**
+     * @callback deleteCallback
+     * @param {Object} err - Error output.
+     */
+    /**
+     * Delete a file or directory
+     * @param {String} path - The path of the file or directory to delete.
+     * @param {deleteCallback} callback.
+     */
+
+    static delete = function(path, callback) {
+        if (FileSystem.isDir(path)) {
+            FileSystem.deleteDir(path, callback);
+        } else {
+            FileSystem.deleteFile(path, callback);
+        }
+    };
+
+    /**
+     * Delete a file or directory synchronously
+     * @param {String} path - The path of the file or directory to delete.
+     * @returns {Object}
+     */
+
+    static deleteSync = function(path) {
+        if (FileSystem.isDir(path)) {
+            FileSystem.deleteDirSync(path);
+        } else {
+            FileSystem.deleteFileSync(path);
+        }
+    };
+
+    /**
+     * Recursively delete the contents of a directory synchronously
+     * @param {String} path - The path of the directory to recursively delete.
+     * @returns {Object}
+     */
+
+    static recursiveDelete = function(path) {
+        function deleteDirectory(path) {
+            let contents = FileSystem.readSync(path);
+            for (let c=0; c<contents.length; c++) {
+                if (FileSystem.isDir(path + contents[c])) {
+                    deleteDirectory(path + contents[c]);
+                }
+                FileSystem.deleteSync(path + contents[c]);
+            }
+            FileSystem.deleteSync(path);
+        }
+
+        deleteDirectory(path);
+    };
+
+    static recursiveDeleteSync = function(path) {
+        FileSystem.recursiveDelete(path);
     };
 
     /**
@@ -546,34 +666,6 @@ function getFile(path) {
     return _path[_path.length-1];
 }
 
-function createDir(dir, callback, i) {
-    if (!i) {
-        i = 0;
-    }
-    let dirs = dir.split(("/"));
-    let root = "";
-    for (let d=0; d<dirs.length-(i+1); d++) {
-        root += dirs[d] + "/";
-    }
-
-    fs.mkdir(root + dirs[dirs.length-(i+1)], function (err) { //create missing directory
-        if (err) {
-            if (err.code === "ENOENT") { //error thrown when parent dir does not exist
-                //attempt to create full path
-                if (i < dirs.length) {
-                    createDir(dir, callback, i+1);
-                } else {
-                    callback();
-                }
-            } else {
-                callback({message: "Unable to create directory \"" + root + dirs[dirs.length-(i+1)] + "\".", err: err});
-            }
-        } else {
-            callback();
-        }
-    });
-}
-
 function getEpoch(dir, files, callback) {
     let epoch = [];
 
@@ -596,13 +688,13 @@ function getEpoch(dir, files, callback) {
     getFileEpoch(0);
 }
 
-function handleError(err, fn, args, dirIndex, callback) {
+function handleError(err, args, dir, callback) {
     if (err.code === "ENOENT") {    //if we get an error because the directory does not exist, attempt to create it
-        createDir(args[dirIndex], function(err) {
+        FileSystem.createDir(dir, function(err) {
             if (err) {
                 callback(err);
             } else {
-                fn(args[0], args[1], args[2], args[3], args[4]);
+                args.callee(...args);
             }
         });
     } else {
