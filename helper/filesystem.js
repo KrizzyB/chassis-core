@@ -133,37 +133,17 @@ class FileSystem {
      * Creates directories that do not exist.
      * @param {String} path - The path of the directory to read.
      * @param {createCallback} callback.
-     * @param {Number} [i]
      */
 
-    static createDir = function(path, callback, i=0) {
-        let dirs = path.split(/[\/\\]/gi).filter(Boolean);  //get each level of the path
-        if (i<dirs.length) {
-            let root = "";
-            for (let d=0; d<dirs.length-(i+1); d++) {   //build the main root to this directory
-                root += dirs[d] + "/";
+    static createDir = function(path, callback) {
+        let args = arguments;
+        fs.mkdir(path, function (err) {
+            if (err) {
+                handleError(err, args, path, callback);
+            } else {
+                callback(null);
             }
-
-            fs.mkdir(root + dirs[dirs.length-(i+1)], function (err) {   //create missing directory
-                if (err) {
-                    switch (err.code) {
-                        case "ENOENT":
-                            FileSystem.createDir(path, callback, i+1); //attempt to create the next level down
-                            break;
-                        case "EEXIST":
-                            callback(null);     //Directory created by another process, move on
-                            break;
-                        default:
-                            callback(err);
-                            break;
-                    }
-                } else {
-                    callback(null);
-                }
-            });
-        } else {
-            callback(null, null);
-        }
+        });
     };
 
     /**
@@ -688,9 +668,39 @@ function getEpoch(dir, files, callback) {
     getFileEpoch(0);
 }
 
+function createDir(path, callback, i=0) {
+    let dirs = path.split(/[\/\\]/gi).filter(Boolean);  //get each level of the path
+    if (i<dirs.length) {
+        let root = "";
+        for (let d=0; d<dirs.length-(i+1); d++) {   //build the main root to this directory
+            root += dirs[d] + "/";
+        }
+
+        fs.mkdir(root + dirs[dirs.length-(i+1)], function (err) {   //create missing directory
+            if (err) {
+                switch (err.code) {
+                    case "ENOENT":
+                        createDir(path, callback, i+1); //attempt to create the next level down
+                        break;
+                    case "EEXIST":
+                        callback(null);     //Directory created by another process, move on
+                        break;
+                    default:
+                        callback(err);
+                        break;
+                }
+            } else {
+                callback(null);
+            }
+        });
+    } else {
+        callback(null, null);
+    }
+}
+
 function handleError(err, args, dir, callback) {
     if (err.code === "ENOENT") {    //if we get an error because the directory does not exist, attempt to create it
-        FileSystem.createDir(dir, function(err) {
+        createDir(dir, function(err) {
             if (err) {
                 callback(err);
             } else {
