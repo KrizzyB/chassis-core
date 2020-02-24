@@ -89,10 +89,10 @@ class ConfigCollection extends CollectionAbstract {
             }
         }
     }
-}
 
-function handleFileReadError(err) {
-
+    getConfigModel() {
+        return Config;
+    }
 }
 
 const schema = {
