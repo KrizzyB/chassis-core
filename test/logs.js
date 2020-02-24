@@ -1,5 +1,4 @@
 const Chassis = require("../chassis");
-const DB = require("chassis-database");
 
 Chassis.bootstrap(function() {
     Log.info("This is an info log");

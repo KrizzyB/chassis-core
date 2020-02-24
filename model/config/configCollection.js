@@ -46,7 +46,7 @@ class ConfigCollection extends CollectionAbstract {
             const FileSystem = require("../../helper/filesystem");
             FileSystem.readFile(appRoot + 'config.json', function (err, config) { //attempt to read the config file
                 if (err) {
-                    handleFileReadError(err);
+                    callback(err, _this);
                 } else {
                     config = JSON.parse(String(config));
                     let configArray = [];

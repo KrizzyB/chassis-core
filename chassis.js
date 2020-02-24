@@ -18,9 +18,8 @@ class Chassis {
         Chassis.getConfig(function(err, config) {
             if (err) {
                 console.error(err);
-            } else if (config) {
-                global.config = config;
             }
+            global.config = config;
 
             //we can only initialise these modules after we pull the config
             global.Log = new (require("./helper/log"));

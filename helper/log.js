@@ -6,7 +6,7 @@ const Config = require("../model/config/config");
 class Log {
     constructor(){
         let logConfig = config.getConfigByID("log");
-        this.config = logConfig ? logConfig.merge(getDefaultConfig()).data : getDefaultConfig().data;
+        this.config = logConfig ? logConfig.merge(getDefaultConfig()) : getDefaultConfig().data;
         this.eventEmitter = new events.EventEmitter();
         this.log = winston.createLogger({
             format: winston.format.combine(
