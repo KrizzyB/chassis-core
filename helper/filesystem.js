@@ -135,7 +135,7 @@ class FileSystem {
      * @param {createCallback} callback.
      */
 
-    static createDir = function(path, callback) {
+    static createDir(path, callback) {
         let args = arguments;
         fs.mkdir(path, function (err) {
             if (err) {
@@ -232,7 +232,7 @@ class FileSystem {
         return fs.copyFileSync(src, dest);
     };
 
-    static deleteDir = function(path, callback) {
+    static deleteDir(path, callback) {
         fs.rmdir(path, function (err) {
             callback(err);
         });
@@ -244,7 +244,7 @@ class FileSystem {
      * @returns {Object}
      */
 
-    static deleteDirSync = function(path) {
+    static deleteDirSync(path) {
         return fs.rmdirSync(path);
     };
 
@@ -258,7 +258,7 @@ class FileSystem {
      * @param {deleteCallback} callback.
      */
 
-    static deleteFile = function(path, callback) {
+    static deleteFile(path, callback) {
         fs.unlink(path, function (err) {
             callback(err);
         });
@@ -270,7 +270,7 @@ class FileSystem {
      * @returns {Object}
      */
 
-    static deleteFileSync = function(path) {
+    static deleteFileSync(path) {
         return fs.unlinkSync(path);
     };
 
@@ -284,7 +284,7 @@ class FileSystem {
      * @param {deleteCallback} callback.
      */
 
-    static delete = function(path, callback) {
+    static delete(path, callback) {
         if (FileSystem.isDir(path)) {
             FileSystem.deleteDir(path, callback);
         } else {
@@ -298,7 +298,7 @@ class FileSystem {
      * @returns {Object}
      */
 
-    static deleteSync = function(path) {
+    static deleteSync(path) {
         if (FileSystem.isDir(path)) {
             FileSystem.deleteDirSync(path);
         } else {
@@ -312,7 +312,7 @@ class FileSystem {
      * @returns {Object}
      */
 
-    static recursiveDelete = function(path) {
+    static recursiveDelete(path) {
         function deleteDirectory(path) {
             let contents = FileSystem.readSync(path);
             for (let c=0; c<contents.length; c++) {
@@ -327,7 +327,7 @@ class FileSystem {
         deleteDirectory(path);
     };
 
-    static recursiveDeleteSync = function(path) {
+    static recursiveDeleteSync(path) {
         FileSystem.recursiveDelete(path);
     };
 
