@@ -47,8 +47,12 @@ class Config {
                         setValue(keys[k], object[keys[k]], _path);
                         break;
                     case object[keys[k]] instanceof Object:
-                        mergeObject(object[keys[k]], _path, keys[k]);
-                        _path.pop();
+                        if (Object.keys(object[keys[k]]).length === 0 && object[keys[k]].constructor === Object) {  //if th object is empty
+                            setValue(keys[k],object[keys[k]], _path);   //set the value as entering empty object will yield no results
+                        } else {
+                            mergeObject(object[keys[k]], _path, keys[k]);
+                            _path.pop();
+                        }
                         break;
                     default:
                         setValue(keys[k],object[keys[k]], _path);
