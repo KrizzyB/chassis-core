@@ -7,9 +7,9 @@
 
 module.exports = function(args) {
     try {
-        let test = require("./tests/" + args.test);
+        let test = require(appRoot + "tests/" + args.test);
         test(args);
     } catch (e) {
-        throw new Err("Cannot run test: " + args.test + " (" + e.message + ").");
+        throw new Err("An error occurred during test: " + args.test + " (" + e.message + ").");
     }
 };
