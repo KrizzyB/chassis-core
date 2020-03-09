@@ -124,7 +124,7 @@ class Config {
 
     static getOne(key, callback) {
         model ? model.findOne({id: key}, function (err, config) {
-            callback(err, {id: key, data: config[key]});
+            callback(err, config);
         }).lean() : callback();
     }
 
