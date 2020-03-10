@@ -153,12 +153,13 @@ class Config {
      * @param {Function} callback
      */
     create(callback) {
-        Config.getOne({id: this.id}, function (err, _config) {   //check if the item already exists
+        let self = this;
+        Config.getOne(self.id, function (err, _config) {   //check if the item already exists
             if (err) {
                 callback(err);
             } else {
                 if (!_config) {
-                    model ? model.create(this, callback) : callback();
+                    model ? model.create(self, callback) : callback();
                 } else {
                     callback();
                 }
@@ -171,12 +172,13 @@ class Config {
      * @param {Function} callback
      */
     update(callback) {
-        Config.getOne({id: this.id}, function (err, _config) {   //check if the item already exists
+        let self = this;
+        Config.getOne(self.id, function (err, _config) {   //check if the item already exists
             if (err) {
                 callback(err);
             } else {
                 if (_config) {
-                    model ? model.findOneAndUpdate({id: this.id}, this, callback) : callback();
+                    model ? model.findOneAndUpdate({id: self.id}, self, callback) : callback();
                 } else {
                     callback(null, null);
                 }
