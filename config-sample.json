@@ -1,0 +1,23 @@
+{
+  "log": {
+    "enabled": {
+      "warn": true,
+      "info": true,
+      "verbose": true,
+      "debug": true
+    }
+  },
+  "error": {
+    "sender": "person@example.com",
+    "receiver": "it@mycompany.com",
+    "transport": {
+      "host": "mail.trespass.co.uk",
+      "port": 25,
+      "secure": false,
+      "requireTLS": false,
+      "tls": {
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
