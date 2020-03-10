@@ -109,4 +109,13 @@ function printHelp() {
     console.log("This is where the help would go...");
 }
 
+//catch all unexpected exceptions using Chassis' error model
+process
+    .on('unhandledRejection', function(reason) {
+        throw new Err(reason);
+    })
+    .on('uncaughtException', function(err) {
+        throw new Err(err);
+    });
+
 module.exports = Chassis;
