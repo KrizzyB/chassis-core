@@ -1,6 +1,7 @@
 const DB = requireOptional("chassis-database");
 const mongoose = DB ? DB.getMongoose() : null;
 const Email = requireOptional("chassis-email");
+const os = require("os");
 let _config = config.getDataByID("error");
 
 const schema = {
@@ -10,10 +11,16 @@ const schema = {
     data: {
         type: Object
     },
+    name: {
+        type: String
+    },
     date: {
         type: Date
     },
     stackTrace: {
+        type: Array
+    },
+    debugData: {
         type: Array
     }
 };
@@ -37,6 +44,18 @@ class Err extends Error {
             this.name = options.name;
         }
 
+        this.debugData = [
+            {label: "Application Directory", value: appRoot},
+            {label: "Machine Name", value: os.hostname()},
+            {label: "Uptime", value: os.uptime()},
+            {label: "Platform", value: os.platform()},
+            {label: "OS Type", value: os.type()},
+            {label: "OS Release", value: os.release()},
+            {label: "Total Memory", value: os.totalmem()},
+            {label: "Free Memory", value: os.freemem()},
+            {label: "Network Interfaces", value: getNetworkInterfaces()}
+        ];
+
         this.save();
         this.sendEmail(this);
     }
@@ -49,10 +68,21 @@ class Err extends Error {
         if (Email) {
             let body = {};
 
-            body.html = "<b>The following error occurred:</b><br>" + error.message + "<br>&nbsp;<br><b>Stack trace:</b><br>";
+            body.html = "<h1>" + _config.application + "</h1><b>The following error occurred:</b><br>" + error.message + "<h2>Stack trace:</h2>";
             for (let t=0; t< this.stackTrace.length; t++) {
                 body.html += this.stackTrace[t] + "<br>";
             }
+
+            body.html += "<h2>Debug Data</h2><table>";
+            for (let d=0; d< this.debugData.length; d++) {
+                body.html += "<tr>" +
+                    "<td>" + this.debugData[d].label + ":</td>" +
+                    "<td>" + this.debugData[d].value + "</td>" +
+                    "</tr>";
+            }
+            body.html += "</table>";
+
+
             body.text = "The following error occurred: \n" + error.message + "\n\nStack trace:\n";
             for (let t=0; t< this.stackTrace.length; t++) {
                 body.text += this.stackTrace[t] + "\n";
@@ -69,3 +99,30 @@ class Err extends Error {
 }
 
 module.exports = Err;
+
+function getNetworkInterfaces() {
+    let interfaceData = [];
+    let networkInterfaces = os.networkInterfaces();
+
+    let interfaces = Object.keys(networkInterfaces);
+    for (let i=0; i<interfaces.length; i++) {
+        for (let j=0; j<networkInterfaces[interfaces[i]].length; j++) {
+            if (!networkInterfaces[interfaces[i]][j].address.internal) {
+                interfaceData.push({interface: interfaces[i], address: networkInterfaces[interfaces[i]][j].address});
+            }
+        }
+    }
+
+    let table = "<table>";
+
+    for (let i=0; i<interfaceData.length; i++) {
+        table += "<tr>" +
+            "<td>" + interfaceData[i].interface + ":</td>" +
+            "<td>" + interfaceData[i].address + "</td>" +
+            "</tr>";
+    }
+
+    table += "</table>";
+
+    return table;
+}

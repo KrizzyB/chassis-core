@@ -8,16 +8,8 @@
     }
   },
   "error": {
-    "sender": "person@example.com",
-    "receiver": "it@mycompany.com",
-    "transport": {
-      "host": "mail.trespass.co.uk",
-      "port": 25,
-      "secure": false,
-      "requireTLS": false,
-      "tls": {
-        "rejectUnauthorized": false
-      }
-    }
+    "application": "My Chassis App",
+    "sender": "errors@chassisapp.com",
+    "receiver": ["admin@example.com"]
   }
 }
