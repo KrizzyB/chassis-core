@@ -21,8 +21,8 @@ class Chassis {
             }
             global.config = config;
 
-            //we can only initialise these modules after we pull the config
-            global.Log = new (require("./helper/log"));
+            //we can only initialise these modules after we load the config
+            global.Log = new (require("./model/logger"));
             global.Err = require("./model/error");
 
             startMainProcess(callback);
@@ -110,12 +110,12 @@ function printHelp() {
 }
 
 //catch all unexpected exceptions using Chassis' error model
-process
-    .on('unhandledRejection', function(reason) {
-        throw new Err(reason);
-    })
-    .on('uncaughtException', function(err) {
-        throw new Err(err);
-    });
+// process
+//     .on('unhandledRejection', function(reason) {
+//         throw new (require("./model/error"))(reason);
+//     })
+//     .on('uncaughtException', function(err) {
+//         throw new (require("./model/error"))(err);
+//     });
 
 module.exports = Chassis;
