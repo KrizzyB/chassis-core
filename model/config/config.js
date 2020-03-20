@@ -188,6 +188,25 @@ class Config {
 
     /**
      *
+     * @param callback
+     */
+    save(callback) {
+        let self = this;
+        Config.getOne(self.id, function (err, _config) {   //check if the item already exists
+            if (err) {
+                callback(err);
+            } else {
+                if (_config) {
+                    model ? model.findOneAndUpdate({id: self.id}, self, callback) : callback();
+                } else {
+                    model ? model.create(self, callback) : callback();
+                }
+            }
+        });
+    }
+
+    /**
+     *
      * @param {Function} callback
      */
     remove(callback) {
