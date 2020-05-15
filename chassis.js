@@ -1,4 +1,4 @@
-const VERSION = "0.1.14";
+const VERSION = "0.1.17";
 
 class Chassis {
     /**
@@ -17,7 +17,11 @@ class Chassis {
 
         Chassis.getConfig(function(err, config) {
             if (err) {
-                console.error(err);
+                if (err.code === "ENOENT") {    //config file does not exist
+                    console.warn("No config file found, application will attempt to run with defaults");
+                } else {
+                    console.error(err);
+                }
             }
             global.config = config;
 
