@@ -1,4 +1,4 @@
-const VERSION = "0.1.17";
+const VERSION = require("./package.json").version;
 
 class Chassis {
     /**
@@ -8,6 +8,7 @@ class Chassis {
     static bootstrap(callback) {
         global.args = require('minimist')(process.argv.slice(2));
         global.appRoot = require("app-root-path").path + "/";
+        global.appVersion = require(global.appRoot + "package.json").version;
         global.config = {};
         global.requireOptional = require("./helper/require-optional");
         global.FileSystem = require("./helper/filesystem");
