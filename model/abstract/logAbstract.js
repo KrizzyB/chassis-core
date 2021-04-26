@@ -3,11 +3,15 @@ const mongoose = DB ? DB.getMongoose() : null;
 
 class LogAbstract {
     constructor(schema, modelName) {
-        let _model = mongoose.models[modelName];
-        if (_model) {
-            this.model = _model;
+        if (mongoose) {
+            let _model = mongoose.models[modelName];
+            if (_model) {
+                this.model = _model;
+            } else {
+                this.model = mongoose.model(modelName, mongoose.Schema(schema));
+            }
         } else {
-            this.model = mongoose ? mongoose.model(modelName, mongoose.Schema(schema)): null;
+            this.model = null;
         }
     }
 
@@ -16,7 +20,9 @@ class LogAbstract {
      * @param {Function} callback
      */
     create() {
-        this.model.create(this);
+        if (this.model) {
+            this.model.create(this);
+        }
     }
 }
 

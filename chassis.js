@@ -19,11 +19,16 @@ class Chassis {
         Chassis.getConfig(function(err, config) {
             if (err) {
                 if (err.code === "ENOENT") {    //config file does not exist
-                    console.warn("No config file found, application will attempt to run with defaults");
+                    FileSystem.writeFile(appRoot + "config.json", "", function(err, file) {
+                        if (err) {
+                            console.error("No config file found!");
+                        }
+                    });
                 } else {
                     console.error(err);
                 }
             }
+
             global.config = config;
 
             //we can only initialise these modules after we load the config
@@ -113,14 +118,5 @@ function printHelp() {
     //todo: write help
     console.log("This is where the help would go...");
 }
-
-//catch all unexpected exceptions using Chassis' error model
-// process
-//     .on('unhandledRejection', function(reason) {
-//         throw new (require("./model/error"))(reason);
-//     })
-//     .on('uncaughtException', function(err) {
-//         throw new (require("./model/error"))(err);
-//     });
 
 module.exports = Chassis;

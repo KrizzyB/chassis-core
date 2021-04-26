@@ -3,11 +3,15 @@ const mongoose = DB ? DB.getMongoose() : null;
 
 class CollectionAbstract {
     constructor(schema, modelName) {
-        let _model = mongoose.models[modelName];
-        if (_model) {
-            this.model = _model;
+        if (mongoose) {
+            let _model = mongoose.models[modelName];
+            if (_model) {
+                this.model = _model;
+            } else {
+                this.model = mongoose.model(modelName, mongoose.Schema(schema));
+            }
         } else {
-            this.model = mongoose ? mongoose.model(modelName, mongoose.Schema(schema)): null;
+            this.model = null;
         }
     }
 
@@ -16,7 +20,7 @@ class CollectionAbstract {
      * @param {Function} callback
      */
     getCollection(callback) {
-        if (DB.getReadyState() && this.model) {
+        if (DB && DB.getReadyState() && this.model) {
             this.model.find({}, function (err, items) {
                 callback(err, items);
             }).lean()

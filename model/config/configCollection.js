@@ -48,7 +48,11 @@ class ConfigCollection extends CollectionAbstract {
                 if (err) {
                     callback(err, _this);
                 } else {
-                    config = JSON.parse(String(config));
+                    try {
+                        config = JSON.parse(String(config));
+                    } catch(e) {
+                        config = {};
+                    }
                     let configArray = [];
                     Object.keys(config).forEach(function(id) {
                         configArray.push({id: id, data: config[id]});
