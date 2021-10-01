@@ -26,19 +26,22 @@ class Logger {
         });
 
         let transports = Object.keys(this.config.transports);
+        let enabledLevels = this.config.enabled;
         for (let i=0; i<transports.length; i++) {
-            this.log.add(new winston.transports.DailyRotateFile({
-                filename: appRoot + this.config.transports[transports[i]].dir + this.config.transports[transports[i]].filename,
-                extension: this.config.transports[transports[i]].extension,
-                level: this.config.transports[transports[i]].level,
-                format: filterOnly(this.config.transports[transports[i]].filters),
-                frequency: this.config.transports[transports[i]].rotation.frequency,
-                datePattern: this.config.transports[transports[i]].rotation.datePattern,
-                zippedArchive: this.config.transports[transports[i]].rotation.zippedArchive,
-                maxSize: this.config.transports[transports[i]].rotation.maxSize,
-                maxFiles: this.config.transports[transports[i]].rotation.maxFiles,
-                utc: this.config.transports[transports[i]].rotation.utc
-            }));
+            if (enabledLevels[transports[i]]) {
+                this.log.add(new winston.transports.DailyRotateFile({
+                    filename: appRoot + this.config.transports[transports[i]].dir + this.config.transports[transports[i]].filename,
+                    extension: this.config.transports[transports[i]].extension,
+                    level: this.config.transports[transports[i]].level,
+                    format: filterOnly(this.config.transports[transports[i]].filters),
+                    frequency: this.config.transports[transports[i]].rotation.frequency,
+                    datePattern: this.config.transports[transports[i]].rotation.datePattern,
+                    zippedArchive: this.config.transports[transports[i]].rotation.zippedArchive,
+                    maxSize: this.config.transports[transports[i]].rotation.maxSize,
+                    maxFiles: this.config.transports[transports[i]].rotation.maxFiles,
+                    utc: this.config.transports[transports[i]].rotation.utc
+                }));
+            }
         }
 
         for (let i=0; i<this.config.console.level.length; i++) {
