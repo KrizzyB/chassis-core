@@ -28,7 +28,7 @@ class FileSystem {
         fs.readdir(dir, function(err, files) {
             if (err) {
                 if (options.createDir) {
-                    handleError(err, args, dir, callback);
+                    handleError(err, FileSystem.read, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -70,7 +70,7 @@ class FileSystem {
         fs.readFile(dir + file, function (err, data) {
             if (err) {
                 if (createDir) {
-                    handleError(err, args, dir, callback);
+                    handleError(err, FileSystem.readFile, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -114,7 +114,7 @@ class FileSystem {
         fs.writeFile(dir + file, data, function (err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, args, dir, callback);
+                    handleError(err, FileSystem.writeFile, args, dir, callback);
                 } else {
                     callback(err);
                 }
@@ -139,7 +139,7 @@ class FileSystem {
         let args = arguments;
         fs.mkdir(path, function (err) {
             if (err) {
-                handleError(err, args, path, callback);
+                handleError(err, FileSystem.createDir, args, path, callback);
             } else {
                 callback(null);
             }
@@ -173,7 +173,7 @@ class FileSystem {
         fs.rename(src, dest, function(err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, args, dest, callback);
+                    handleError(err, FileSystem.move, args, dest, callback);
                 } else {
                     callback(err);
                 }
@@ -211,7 +211,7 @@ class FileSystem {
         fs.copyFile(src, dest, function(err) {
             if (err) {
                 if (createDir) {
-                    handleError(err, args, dest, callback);
+                    handleError(err, FileSystem.copy, args, dest, callback);
                 } else {
                     callback(err);
                 }
@@ -698,13 +698,13 @@ function createDir(path, callback, i=0) {
     }
 }
 
-function handleError(err, args, dir, callback) {
+function handleError(err, sourceFn, args, dir, callback) {
     if (err.code === "ENOENT") {    //if we get an error because the directory does not exist, attempt to create it
         createDir(dir, function(err) {
             if (err) {
                 callback(err);
             } else {
-                args.callee(...args);
+                sourceFn(...args);
             }
         });
     } else {
