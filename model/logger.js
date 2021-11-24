@@ -28,7 +28,7 @@ class Logger {
         let transports = Object.keys(this.config.transports);
         let enabledLevels = this.config.enabled;
         for (let i=0; i<transports.length; i++) {
-            if (enabledLevels[transports[i]]) {
+            if (enabledLevels[transports[i]] || transports[i] === "error") {
                 this.log.add(new winston.transports.DailyRotateFile({
                     filename: appRoot + this.config.transports[transports[i]].dir + this.config.transports[transports[i]].filename,
                     extension: this.config.transports[transports[i]].extension,
@@ -56,10 +56,15 @@ class Logger {
      *
      * @param {String} message
      * @param {String} [module]
+     * @param {Object} [data]
      */
-    error(message, module) {
-        this.log.error(message, {module: module});
-        this.eventEmitter.emit("log", {log: message, error: true});
+    error(message, module, data) {
+        let args = checkArgs(module, data);
+        module = args.module;
+        data = args.data;
+
+        this.log.error(message, {data: JSON.stringify(data), module: module});
+        this.eventEmitter.emit("log", {log: message, data: data, module: module, error: true});
         new Log("error", message, module).create();
     };
 
