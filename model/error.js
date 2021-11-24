@@ -66,34 +66,39 @@ class Err extends Error {
 
     sendEmail(error) {
         if (Email) {
-            let body = {};
+            if (_config) {
+                let body = {};
 
-            body.html = "<h1>" + _config.application + "</h1><b>The following error occurred:</b><br>" + error.message + "<h2>Stack trace:</h2>";
-            for (let t=0; t< this.stackTrace.length; t++) {
-                body.html += this.stackTrace[t] + "<br>";
-            }
-
-            body.html += "<h2>Debug Data</h2><table>";
-            for (let d=0; d< this.debugData.length; d++) {
-                body.html += "<tr>" +
-                    "<td>" + this.debugData[d].label + ":</td>" +
-                    "<td>" + this.debugData[d].value + "</td>" +
-                    "</tr>";
-            }
-            body.html += "</table>";
-
-
-            body.text = "The following error occurred: \n" + error.message + "\n\nStack trace:\n";
-            for (let t=0; t< this.stackTrace.length; t++) {
-                body.text += this.stackTrace[t] + "\n";
-            }
-
-            let email = new Email(_config.sender, _config.receiver, "❌ ERROR: " + error.message, body, "error");
-            email.send(function(email) {
-                if (email.err) {
-                    Log.error(err.message, "Error");
+                body.html = "<h1>" + appPackage.name + "</h1><b>The following error occurred:</b><br>" + error.message + "<h2>Stack trace:</h2>";
+                for (let t=0; t< this.stackTrace.length; t++) {
+                    body.html += this.stackTrace[t] + "<br>";
                 }
-            });
+
+                body.html += "<h2>Debug Data</h2><table>";
+                for (let d=0; d< this.debugData.length; d++) {
+                    body.html += "<tr>" +
+                        "<td>" + this.debugData[d].label + ":</td>" +
+                        "<td>" + this.debugData[d].value + "</td>" +
+                        "</tr>";
+                }
+                body.html += "</table>";
+
+
+                body.text = "The following error occurred: \n" + error.message + "\n\nStack trace:\n";
+                for (let t=0; t< this.stackTrace.length; t++) {
+                    body.text += this.stackTrace[t] + "\n";
+                }
+
+                let email = new Email(_config.sender, _config.receiver, "❌ ERROR: " + error.message, body, "error");
+                email.send(function(email) {
+                    if (email.err) {
+                        Log.error(err.message, "Error");
+                    }
+                });
+            } else {
+                Log.warn("Cannot send error notification by email without config.");
+            }
+
         }
     }
 }

@@ -1,4 +1,5 @@
-const VERSION = require("./package.json").version;
+const PACKAGE = require("./package.json");
+global.appPackage = PACKAGE;   //keep app data for module use
 
 class Chassis {
     /**
@@ -39,8 +40,12 @@ class Chassis {
         });
     }
 
+    static getPackage() {
+        return PACKAGE;
+    }
+
     static getVersion() {
-        return VERSION;
+        return PACKAGE.version;
     }
 
     static getConfig(callback) {
