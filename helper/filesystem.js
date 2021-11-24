@@ -64,14 +64,19 @@ class FileSystem {
      */
 
     static readFile(path, callback, createDir) {
-        let args = arguments;
         let dir = getDir(path);
         let file = getFile(path);
         fs.readFile(dir + file, function (err, data) {
             if (err) {
-                if (createDir) {
-                    handleError(err, FileSystem.readFile, args, dir, callback);
-                } else {
+                if (err.code === "ENOENT") {
+                    FileSystem.writeFile(path, "", function(err) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            FileSystem.readFile(path, callback, createDir);
+                        }
+                    }, true);
+                }  else {
                     callback(err);
                 }
             } else {
