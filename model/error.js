@@ -96,7 +96,7 @@ class Err extends Error {
                     }
                 });
             } else {
-                Log.warn("Cannot send error notification by email without config.");
+                Log.warn("Cannot send error notification by email without config.", "chassis-error");
             }
 
         }
